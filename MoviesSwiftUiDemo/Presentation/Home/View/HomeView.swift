@@ -17,6 +17,14 @@ struct HomeView: View {
         GridItem(.flexible(), spacing: 16)
     ]
     
+    var filteredFilms: [(String, String, String)] {
+        if searchText.isEmpty {
+            return HomeConstants.films
+        } else {
+            return HomeConstants.films.filter { $0.0.lowercased().contains(searchText.lowercased()) }
+        }
+    }
+    
     var body: some View {
         ScrollView {
             
@@ -29,7 +37,7 @@ struct HomeView: View {
             GenreListView(selectedIndex: $selectedIndex)
             
             LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(HomeConstants.films, id: \.0) { title, year, imageName in
+                ForEach(filteredFilms, id: \.0) { title, year, imageName in
                     FilmCardView(imageName: imageName, filmTitle: title, fileReleaseYear: year)
                 }
             }
