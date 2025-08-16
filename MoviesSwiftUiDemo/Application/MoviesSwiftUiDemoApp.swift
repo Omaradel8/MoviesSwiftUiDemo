@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct MoviesSwiftUiDemoApp: App {
+    
+    @StateObject private var coordinator = AppFlowCoordinator()
+    
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            coordinator.buildRootView()
         }
     }
 }
