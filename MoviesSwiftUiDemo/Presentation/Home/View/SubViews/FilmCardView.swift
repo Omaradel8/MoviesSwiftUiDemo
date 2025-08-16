@@ -41,7 +41,7 @@ struct FilmCardView: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.8))
+                .fill(Color(red: 0.1, green: 0.1, blue: 0.1))
         )
         .shadow(radius: 5)
     }
