@@ -16,6 +16,7 @@ struct GenreCapsuleView: View {
         Text(genreTitle)
             .padding(.horizontal, 12)
             .padding(.vertical, 5)
+            .foregroundColor(isSelected ? .black : .white)
             .background (
                 capsuleBackground
             )
