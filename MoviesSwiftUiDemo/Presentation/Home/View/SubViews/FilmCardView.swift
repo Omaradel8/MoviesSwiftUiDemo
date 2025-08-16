@@ -1,0 +1,52 @@
+//
+//  FilmCardView.swift
+//  MoviesSwiftUiDemo
+//
+//  Created by Omar Adel on 16/08/2025.
+//
+
+import SwiftUI
+
+struct FilmCardView: View {
+    
+    var imageName: String
+    var filmTitle: String
+    var fileReleaseYear: String
+    
+    var body: some View {
+        VStack {
+            Image(imageName)
+                .resizable()
+                .scaledToFit()
+                .cornerRadius(12)
+                .clipped()
+            
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(filmTitle)
+                        .font(.headline)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        .frame(minHeight: 44, alignment: .topLeading)
+                    
+                    Text(fileReleaseYear)
+                        .font(.caption)
+                }
+                .foregroundColor(.white)
+                
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.bottom)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(red: 0.1, green: 0.1, blue: 0.1))
+        )
+        .shadow(radius: 5)
+    }
+}
+
+#Preview {
+    FilmCardView(imageName: "poster", filmTitle: "Lilo&Stitsh", fileReleaseYear: "2020")
+}
