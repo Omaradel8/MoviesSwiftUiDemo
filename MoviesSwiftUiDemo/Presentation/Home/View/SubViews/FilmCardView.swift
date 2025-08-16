@@ -18,6 +18,7 @@ struct FilmCardView: View {
             Image(imageName)
                 .resizable()
                 .scaledToFit()
+                .cornerRadius(12)
                 .clipped()
             
             HStack {
