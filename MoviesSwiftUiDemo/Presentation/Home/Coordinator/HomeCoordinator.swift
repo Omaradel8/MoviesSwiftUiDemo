@@ -8,5 +8,7 @@
 import Foundation
 
 class HomeCoordinator: Coordinator {
-    
+    func navigateToDetailsScreen() {
+        navigate(to: .MOVIEDETAILS)
+    }
 }

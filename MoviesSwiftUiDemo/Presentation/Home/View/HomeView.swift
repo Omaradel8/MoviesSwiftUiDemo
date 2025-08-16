@@ -46,6 +46,9 @@ struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel:
                 LazyVGrid(columns: columns, spacing: 10) {
                     ForEach(filteredFilms, id: \.0) { title, year, imageName in
                         FilmCardView(imageName: imageName, filmTitle: title, fileReleaseYear: year)
+                            .onTapGesture {
+                                self.viewModel.didTapMovie()
+                            }
                     }
                 }
                 .padding(.horizontal)

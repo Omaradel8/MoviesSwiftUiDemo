@@ -23,7 +23,9 @@ class HomeViewModel: ObservableObject, HomeViewModelProtocol {
 
 // MARK: - HomeViewModel Input
 extension HomeViewModel {
-    
+    func didTapMovie() {
+        coordiantor.navigateToDetailsScreen()
+    }
 }
 
 // MARK: - HomeViewModel Output
