@@ -19,6 +19,10 @@ class AppFlowCoordinator: ObservableObject {
         )
     }
     
+    private lazy var homeViewModel: HomeViewModel = {
+        HomeDIContainer.shared.getHomeViewModel(with: pathBinding)
+    }()
+    
     func buildRootView() -> some View {
         NavigationStack(path: pathBinding) {
             self.homeView()
@@ -34,7 +38,7 @@ class AppFlowCoordinator: ObservableObject {
     }
     
     private func homeView() -> some View {
-        return HomeView()
+        return HomeView(viewModel: self.homeViewModel)
     }
     
     private func movieDetailsView() -> some View {

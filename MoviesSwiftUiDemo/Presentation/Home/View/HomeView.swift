@@ -7,10 +7,12 @@
 
 import SwiftUI
 
-struct HomeView: View {
+struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel: ObservableObject {
     
     @State private var selectedIndex: Int = 0
     @State private var searchText: String = ""
+    
+    @StateObject var viewModel: HomeViewModel
     
     let columns = [
         GridItem(.flexible(), spacing: 16),
@@ -53,5 +55,13 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    var path = NavigationPath()
+    var pathBinding: Binding<NavigationPath> {
+        Binding(
+            get: { path },
+            set: { path = $0}
+        )
+    }
+    
+    HomeView(viewModel: HomeViewModel(coordiantor: HomeCoordinator(pathBinding: pathBinding)))
 }
