@@ -26,22 +26,28 @@ struct HomeView: View {
     }
     
     var body: some View {
-        ScrollView {
+        ZStack {
             
-            TextField("Search TMDB", text: $searchText)
-                .padding(10)
-                .background(Color(.systemGray6))
-                .cornerRadius(10)
-                .padding(.horizontal)
+            Color.black
+                .ignoresSafeArea()
             
-            GenreListView(selectedIndex: $selectedIndex)
-            
-            LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(filteredFilms, id: \.0) { title, year, imageName in
-                    FilmCardView(imageName: imageName, filmTitle: title, fileReleaseYear: year)
+            ScrollView {
+                
+                TextField("Search TMDB", text: $searchText)
+                    .padding(10)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
+                
+                GenreListView(selectedIndex: $selectedIndex)
+                
+                LazyVGrid(columns: columns, spacing: 10) {
+                    ForEach(filteredFilms, id: \.0) { title, year, imageName in
+                        FilmCardView(imageName: imageName, filmTitle: title, fileReleaseYear: year)
+                    }
                 }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
         }
     }
 }
