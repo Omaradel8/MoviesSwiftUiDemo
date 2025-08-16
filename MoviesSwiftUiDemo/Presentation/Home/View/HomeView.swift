@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct HomeView: View {
+    
+    @State private var selectedIndex: Int = 0
+    
     var body: some View {
         ScrollView {
-            ScrollView(.horizontal) {
-                HStack {
-                    
-                }
-            }
+            GenreListView(selectedIndex: $selectedIndex)
         }
     }
 }
