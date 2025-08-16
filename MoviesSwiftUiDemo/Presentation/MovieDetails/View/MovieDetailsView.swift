@@ -12,11 +12,17 @@ struct MovieDetailsView: View {
     
     var body: some View {
         ScrollView {
+            // TOP POSTER
             Image("poster")
                 .resizable()
                 .scaledToFit()
                 .frame(maxWidth: .infinity)
                 .frame(height: 350)
+            
+            // MOVIE HEADER VIEW
+            MovieHeaderView(imageName: "poster", title: "Movie Name", genres: "Genres")
+            
+            
         }
         .background(Color.black)
         .ignoresSafeArea()
