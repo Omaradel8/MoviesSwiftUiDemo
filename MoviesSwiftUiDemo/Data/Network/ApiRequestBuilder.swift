@@ -22,12 +22,14 @@ class APIRequestBuilder {
     
     private func setDefaultHeaders() {
         self.headers = [:]
+        headers?[RequestHeader.ACCEPT.rawValue] = RequestHeaderValues.ACCEPT
+        headers?[RequestHeader.AUTHORIZATION.rawValue] = RequestHeader.BEARER.rawValue + "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmNTEzYjliYjc1YTBiM2QxYTU5MWRhNjdlMmJjODc1MCIsIm5iZiI6MTc1NTM1NjQ2MC40MTUsInN1YiI6IjY4YTA5ZDJjZmU3NWNlNjg4MTBiZmE3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.dkGqW0VJtoAvZWfJ9Px4_RWXwxqny8IMTg1GA8YW4KY"
     }
 
     func setHeaders(_ headers: [String: String]) -> Self {
         for (key, value) in headers {
             self.headers?[key] = value
-          }
+        }
         return self
     }
 
@@ -51,4 +53,15 @@ class APIRequestBuilder {
             parameterEncoding: parameterEncoding
         )
     }
+}
+
+enum RequestHeader: String {
+    case AUTHORIZATION  = "Authorization"
+    case BEARER = "Bearer "
+    case ACCEPT = "accept"
+}
+
+
+struct RequestHeaderValues {
+    static let ACCEPT  = "application/json"
 }
