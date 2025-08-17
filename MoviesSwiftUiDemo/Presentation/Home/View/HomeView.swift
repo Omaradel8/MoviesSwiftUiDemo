@@ -43,8 +43,8 @@ struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel:
                 GenreListView(viewModel: viewModel)
                 
                 LazyVGrid(columns: columns, spacing: 10) {
-                    ForEach(filteredFilms, id: \.0) { title, year, imageName in
-                        FilmCardView(imageName: imageName, filmTitle: title, fileReleaseYear: year)
+                    ForEach(viewModel.filteredMovies, id: \.id) { movie in
+                        FilmCardView(movie: movie)
                             .onTapGesture {
                                 self.viewModel.didTapMovie()
                             }
