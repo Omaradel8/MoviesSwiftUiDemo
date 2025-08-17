@@ -41,7 +41,7 @@ struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel:
                     .cornerRadius(10)
                     .padding(.horizontal)
                 
-                GenreListView(selectedIndex: $selectedIndex)
+                GenreListView(selectedIndex: $selectedIndex, genres: viewModel.genres)
                 
                 LazyVGrid(columns: columns, spacing: 10) {
                     ForEach(filteredFilms, id: \.0) { title, year, imageName in

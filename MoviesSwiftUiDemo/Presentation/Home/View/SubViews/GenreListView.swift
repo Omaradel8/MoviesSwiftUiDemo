@@ -10,13 +10,14 @@ import SwiftUI
 struct GenreListView: View {
     
     @Binding var selectedIndex: Int
+    var genres: [Genre]
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(HomeConstants.genres.indices, id: \.self) { index in
+                ForEach(genres.indices, id: \.self) { index in
                     GenreCapsuleView(
-                        genreTitle: HomeConstants.genres[index],
+                        genreTitle: genres[index].name ?? "",
                         isSelected: selectedIndex == index
                     )
                     .onTapGesture {
@@ -32,5 +33,5 @@ struct GenreListView: View {
 }
 
 #Preview {
-    GenreListView(selectedIndex: .constant(0))
+    GenreListView(selectedIndex: .constant(0), genres: [])
 }
