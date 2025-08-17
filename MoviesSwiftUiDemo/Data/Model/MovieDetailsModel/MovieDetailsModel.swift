@@ -85,3 +85,33 @@ struct SpokenLanguage: Codable {
         case name
     }
 }
+
+var emptyMovie: MovieDetailsModel {
+    return MovieDetailsModel(
+        adult: nil,
+        backdropPath: nil,
+        budget: nil,
+        genres: [],
+        homepage: nil,
+        id: nil,
+        imdbID: nil,
+        originCountry: [],
+        originalLanguage: nil,
+        originalTitle: nil,
+        overview: nil,
+        popularity: nil,
+        posterPath: nil,
+        productionCompanies: [],
+        productionCountries: [],
+        releaseDate: nil,
+        revenue: nil,
+        runtime: nil,
+        spokenLanguages: [],
+        status: nil,
+        tagline: nil,
+        title: nil,
+        video: nil,
+        voteAverage: nil,
+        voteCount: nil
+    )
+}
