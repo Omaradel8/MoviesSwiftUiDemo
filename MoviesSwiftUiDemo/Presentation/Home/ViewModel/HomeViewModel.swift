@@ -16,14 +16,16 @@ class HomeViewModel: ObservableObject, HomeViewModelProtocol {
     // MARK: - Variables
     private let coordiantor: HomeCoordinator
     private let genreUseCase: GenreUseCaseProtocol
+    private let trendingMoviesUseCase: TrendingMoviesUseCaseProtocol
     private var cancellables = Set<AnyCancellable>()
     @Published private(set) var genres: [Genre] = []
     @Published var selectedIndex: Int = 0
     
     // MARK: - Initiliazer
-    init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol) {
+    init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol, trendingMoviesUseCase: TrendingMoviesUseCaseProtocol) {
         self.coordiantor = coordiantor
         self.genreUseCase = genreUseCase
+        self.trendingMoviesUseCase = trendingMoviesUseCase
     }
     
     func getGenre() {

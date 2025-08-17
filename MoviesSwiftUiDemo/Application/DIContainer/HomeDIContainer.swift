@@ -12,7 +12,7 @@ class HomeDIContainer {
     private init() {}
     
     func getHomeViewModel(with pathBinding: Binding<NavigationPath>) -> HomeViewModel {
-        HomeViewModel(coordiantor: getHomeCoordinator(with: pathBinding), genreUseCase: getGenreUseCase())
+        HomeViewModel(coordiantor: getHomeCoordinator(with: pathBinding), genreUseCase: getGenreUseCase(), trendingMoviesUseCase: getTrendingMoviesUseCase())
     }
     
     private func getHomeCoordinator(with pathBinding: Binding<NavigationPath>) -> HomeCoordinator {
@@ -33,5 +33,17 @@ class HomeDIContainer {
     
     private func getGenreApiConfig() -> APIEndpointConfig {
         return GenreConfig()
+    }
+    
+    private func getTrendingMoviesUseCase() -> TrendingMoviesUseCaseProtocol {
+        return TrendingMoviesUseCase(trendingMoviesRepository: getTrendingMoviesRepository())
+    }
+    
+    private func getTrendingMoviesRepository() -> TrendingMoviesRepositoryProtocol {
+        return TrendingMoviesRepository(networkManager: getNetworkManger(), trendingMoviesConfig: getTrendingMoviesConfig())
+    }
+    
+    private func getTrendingMoviesConfig() -> APIEndpointConfig {
+        return TrendingMoviesConfig()
     }
 }
