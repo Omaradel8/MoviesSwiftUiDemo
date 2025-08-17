@@ -9,9 +9,9 @@ import Foundation
 import Combine
 
 // MARK: - typealias
-typealias HomeViewModelProtocol = HomeViewModelInput & HomeViewModelOutput
+typealias HomeViewModelProtocol = HomeViewModelInput & HomeViewModelOutput & ObservableObject
 
-class HomeViewModel: ObservableObject, HomeViewModelProtocol {
+class HomeViewModel: HomeViewModelProtocol {
     
     // MARK: - Variables
     private let coordiantor: HomeCoordinator
@@ -21,14 +21,19 @@ class HomeViewModel: ObservableObject, HomeViewModelProtocol {
     @Published private(set) var genres: [Genre] = []
     @Published private(set) var trendingMovies: [Movie] = [] {
         didSet{
-            self.filterMoviesDueGenre()
+            self.filterMovies()
         }
     }
     @Published private(set) var filteredMovies: [Movie] = []
     @Published var selectedIndex: Int = 0 {
         didSet {
             guard !trendingMovies.isEmpty else { return }
-            self.filterMoviesDueGenre()
+            self.filterMovies()
+        }
+    }
+    @Published var searchText: String = "" {
+        didSet{
+            self.filterMovies()
         }
     }
     private var currentPage = 1
@@ -108,9 +113,17 @@ class HomeViewModel: ObservableObject, HomeViewModelProtocol {
         .store(in: &cancellables)
     }
 
-    private func filterMoviesDueGenre() {
-        self.filteredMovies = self.trendingMovies.filter({ $0.genreIDS?.contains(genres[selectedIndex].id ?? 0) ?? false })
-        print(filteredMovies.count)
+    private func filterMoviesDueGenre() -> [Movie] {
+        return self.trendingMovies.filter({ $0.genreIDS?.contains(genres[selectedIndex].id ?? 0) ?? false })
+    }
+    
+    private func filterMovies() {
+        let filteredMoviesDueGenre = self.filterMoviesDueGenre()
+        if self.searchText.isEmpty {
+            self.filteredMovies = filteredMoviesDueGenre
+        }else{
+            self.filteredMovies = filteredMoviesDueGenre.filter( { $0.originalTitle?.lowercased().contains(searchText.lowercased()) ?? false } )
+        }
     }
 }
 

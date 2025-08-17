@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel: ObservableObject {
+struct HomeView: View {
     
     @State private var searchText: String = ""
     
@@ -34,7 +34,7 @@ struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel:
             
             ScrollView {
                 
-                TextField("Search TMDB", text: $searchText)
+                TextField("Search TMDB", text: $viewModel.searchText)
                     .padding(10)
                     .background(Color(.systemGray6))
                     .cornerRadius(10)
