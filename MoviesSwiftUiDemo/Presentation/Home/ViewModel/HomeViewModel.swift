@@ -18,6 +18,7 @@ class HomeViewModel: ObservableObject, HomeViewModelProtocol {
     private let genreUseCase: GenreUseCaseProtocol
     private var cancellables = Set<AnyCancellable>()
     @Published private(set) var genres: [Genre] = []
+    @Published var selectedIndex: Int = 0
     
     // MARK: - Initiliazer
     init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol) {
@@ -66,6 +67,10 @@ extension HomeViewModel {
     
     func onAppear() {
         getGenre()
+    }
+    
+    func setSelectedGenre(at index: Int) {
+        self.selectedIndex = index
     }
 }
 

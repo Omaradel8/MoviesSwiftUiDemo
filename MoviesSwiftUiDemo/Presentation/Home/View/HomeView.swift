@@ -9,7 +9,6 @@ import SwiftUI
 
 struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel: ObservableObject {
     
-    @State private var selectedIndex: Int = 0
     @State private var searchText: String = ""
     
     @StateObject var viewModel: HomeViewModel
@@ -41,7 +40,7 @@ struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel:
                     .cornerRadius(10)
                     .padding(.horizontal)
                 
-                GenreListView(selectedIndex: $selectedIndex, genres: viewModel.genres)
+                GenreListView(viewModel: viewModel)
                 
                 LazyVGrid(columns: columns, spacing: 10) {
                     ForEach(filteredFilms, id: \.0) { title, year, imageName in

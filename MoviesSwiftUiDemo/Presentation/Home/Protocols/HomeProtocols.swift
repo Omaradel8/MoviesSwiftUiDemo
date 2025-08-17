@@ -11,9 +11,11 @@ import Foundation
 protocol HomeViewModelInput {
     func didTapMovie()
     func onAppear()
+    func setSelectedGenre(at index: Int)
 }
 
 // MARK: - HomeViewModelOutput
 protocol HomeViewModelOutput {
     var genres: [Genre] { get }
+    var selectedIndex: Int { get set }
 }
