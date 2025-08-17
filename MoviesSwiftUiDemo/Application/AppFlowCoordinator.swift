@@ -23,6 +23,10 @@ class AppFlowCoordinator: ObservableObject {
         HomeDIContainer.shared.getHomeViewModel(with: pathBinding)
     }()
     
+    private lazy var movieDetailsViewModel: MovieDetailsViewModel = {
+        MovieDetailsDIContainer.shared.getMovieDetailsViewModel(with: pathBinding)
+    }()
+    
     func buildRootView() -> some View {
         NavigationStack(path: pathBinding) {
             self.homeView()
@@ -30,8 +34,8 @@ class AppFlowCoordinator: ObservableObject {
                     switch route {
                     case .HOME:
                         self.homeView()
-                    case .MOVIEDETAILS:
-                        self.movieDetailsView()
+                    case .MOVIEDETAILS(let movieId):
+                        self.movieDetailsView(movieId: movieId)
                     }
                 }
         }
@@ -41,8 +45,10 @@ class AppFlowCoordinator: ObservableObject {
         return HomeView(viewModel: self.homeViewModel)
     }
     
-    private func movieDetailsView() -> some View {
-        return MovieDetailsView()
+    private func movieDetailsView(movieId: Int) -> some View {
+        let viewModel = movieDetailsViewModel
+        viewModel.setupMovieId(movieId: movieId)
+        return MovieDetailsView(viewModel: viewModel)
     }
     
     func navigate(to route: AppRoute) {

@@ -9,5 +9,5 @@ import Foundation
 
 enum AppRoute: Hashable {
     case HOME
-    case MOVIEDETAILS
+    case MOVIEDETAILS(movieId: Int)
 }
