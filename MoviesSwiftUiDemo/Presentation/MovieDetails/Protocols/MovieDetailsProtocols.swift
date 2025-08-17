@@ -9,8 +9,11 @@ import Foundation
 
 // MARK: - MovieDetailsViewModelInput
 protocol MovieDetailsViewModelInput {
+    func onAppear()
+    func isLoading() -> Bool
 }
 
 // MARK: - MovieDetailsViewModelOutput
 protocol MovieDetailsViewModelOutput {
+    var movieDetails: MovieDetailsModel { get }
 }

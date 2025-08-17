@@ -16,4 +16,7 @@ struct EndPointsURLs {
     static func getTrendingMovies() -> String {
         EndPointsURLs.baseUrl + "discover/movie"
     }
+    static func getMovieDetails(movieId: Int) -> String {
+        EndPointsURLs.baseUrl + "movie/\(movieId)?language=en-US"
+    }
 }
