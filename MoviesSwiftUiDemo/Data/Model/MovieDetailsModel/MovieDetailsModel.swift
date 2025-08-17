@@ -38,6 +38,11 @@ struct MovieDetailsModel: Codable {
         guard let path = backdropPath else { return nil }
         return "https://image.tmdb.org/t/p/w500\(path)"
     }
+    var allGenres: String? {
+        genres?
+            .compactMap { $0.name }
+            .joined(separator: ", ") ?? ""
+    }
 
     enum CodingKeys: String, CodingKey {
         case adult
