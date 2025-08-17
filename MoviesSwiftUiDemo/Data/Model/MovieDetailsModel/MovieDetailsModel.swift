@@ -43,6 +43,11 @@ struct MovieDetailsModel: Codable {
             .compactMap { $0.name }
             .joined(separator: ", ") ?? ""
     }
+    var allSpokenLanguages: String? {
+        spokenLanguages?
+            .compactMap { $0.englishName }
+            .joined(separator: ", ")
+    }
 
     enum CodingKeys: String, CodingKey {
         case adult

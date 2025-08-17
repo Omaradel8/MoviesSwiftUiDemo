@@ -38,7 +38,7 @@ struct MovieDetailsView: View {
             Spacer(minLength: 100)
             
             // FOOTER SECTION
-            MovieFooterView()
+            MovieFooterView(viewModel: viewModel)
             
             Spacer(minLength: 50)
         }

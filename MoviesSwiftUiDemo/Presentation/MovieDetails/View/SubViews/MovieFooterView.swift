@@ -8,15 +8,21 @@
 import SwiftUI
 
 struct MovieFooterView: View {
+    
+    @ObservedObject var viewModel: MovieDetailsViewModel
+    
     var body: some View {
         HStack(spacing: 4) {
             Text("Home page:")
                 .foregroundColor(.white)
                 .font(.footnote)
             
-            Link("https://movies.disney.com", destination: URL(string: "https://movies.disney.com")!)
-                .foregroundColor(.blue)
-                .font(.footnote)
+            if let homepage = viewModel.movieDetails.homepage,
+               let url = URL(string: homepage) {
+                Link(homepage, destination: url)
+                    .foregroundColor(.blue)
+                    .font(.footnote)
+            }
             
             Spacer()
         }
@@ -25,7 +31,7 @@ struct MovieFooterView: View {
         HStack(spacing: 4) {
             Text("Languages:")
             
-            Text("English")
+            Text(viewModel.movieDetails.allSpokenLanguages ?? "")
             
             Spacer()
         }
@@ -37,7 +43,7 @@ struct MovieFooterView: View {
             HStack(spacing: 4) {
                 Text("Status:")
                 
-                Text("Released")
+                Text(viewModel.movieDetails.releaseDate ?? "")
                 
                 Spacer()
             }
@@ -50,7 +56,7 @@ struct MovieFooterView: View {
             HStack(spacing: 4) {
                 Text("Runtime:")
                 
-                Text("102 minutes")
+                Text("\(viewModel.movieDetails.runtime ?? 0) minutes")
                 
                 Spacer()
             }
@@ -63,7 +69,7 @@ struct MovieFooterView: View {
             HStack(spacing: 4) {
                 Text("Budget:")
                 
-                Text("50 $")
+                Text("\(viewModel.movieDetails.budget ?? 0) $")
                 
                 Spacer()
             }
@@ -76,7 +82,7 @@ struct MovieFooterView: View {
             HStack(spacing: 4) {
                 Text("Revenue:")
                 
-                Text("100 $")
+                Text("\(viewModel.movieDetails.revenue ?? 0) $")
                 
                 Spacer()
             }
@@ -88,5 +94,13 @@ struct MovieFooterView: View {
 }
 
 #Preview {
-    MovieFooterView()
+    var path = NavigationPath()
+    var pathBinding: Binding<NavigationPath> {
+        Binding(
+            get: { path },
+            set: { path = $0}
+        )
+    }
+    
+    MovieFooterView(viewModel: MovieDetailsViewModel(coordiantor: MovieDetailsCoordinator(pathBinding: pathBinding), movieDetailsUseCase: MovieDetailsUseCase(movieDetailsRepository: MovieDetailsRepository(networkManager: NetworkManager(), movieDetailsConfig: MovieDetailsConfig()))))
 }
