@@ -13,11 +13,15 @@ struct FilmCardView: View {
     
     var body: some View {
         VStack {
-            Image("poster")
-                .resizable()
-                .scaledToFit()
-                .cornerRadius(12)
-                .clipped()
+            AsyncImage(url: URL(string: movie.posterFullPath ?? "")) { image in
+                image
+                    .resizable()
+                    .scaledToFit()
+                    .cornerRadius(12)
+            } placeholder: {
+                ProgressView()
+                    .frame(height: 260)
+            }
             
             HStack {
                 VStack(alignment: .leading) {
