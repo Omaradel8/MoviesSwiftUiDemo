@@ -12,11 +12,26 @@ class HomeDIContainer {
     private init() {}
     
     func getHomeViewModel(with pathBinding: Binding<NavigationPath>) -> HomeViewModel {
-        HomeViewModel(coordiantor: getHomeCoordinator(with: pathBinding))
+        HomeViewModel(coordiantor: getHomeCoordinator(with: pathBinding), genreUseCase: getGenreUseCase())
     }
     
     private func getHomeCoordinator(with pathBinding: Binding<NavigationPath>) -> HomeCoordinator {
         HomeCoordinator(pathBinding: pathBinding)
     }
-
+    
+    private func getGenreUseCase() -> GenreUseCaseProtocol {
+        return GenreUseCase(genreRepository: getGenreRepository())
+    }
+    
+    private func getGenreRepository() -> GenreRepositoryProtocol {
+        return GenreRepository(networkManager: getNetworkManger(), genreConfig: getGenreApiConfig())
+    }
+    
+    private func getNetworkManger() -> NetworkManagerProtocol {
+        return NetworkManager()
+    }
+    
+    private func getGenreApiConfig() -> APIEndpointConfig {
+        return GenreConfig()
+    }
 }

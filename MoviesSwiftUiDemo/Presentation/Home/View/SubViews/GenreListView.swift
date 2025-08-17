@@ -7,21 +7,21 @@
 
 import SwiftUI
 
-struct GenreListView: View {
+struct GenreListView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel: ObservableObject {
     
-    @Binding var selectedIndex: Int
+    @ObservedObject var viewModel: HomeViewModel
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(HomeConstants.genres.indices, id: \.self) { index in
+                ForEach(viewModel.genres.indices, id: \.self) { index in
                     GenreCapsuleView(
-                        genreTitle: HomeConstants.genres[index],
-                        isSelected: selectedIndex == index
+                        genreTitle: viewModel.genres[index].name ?? "",
+                        isSelected: viewModel.selectedIndex == index
                     )
                     .onTapGesture {
-                        if selectedIndex != index {
-                            selectedIndex = index
+                        if viewModel.selectedIndex != index {
+                            viewModel.setSelectedGenre(at: index)
                         }
                     }
                 }
@@ -31,6 +31,6 @@ struct GenreListView: View {
     }
 }
 
-#Preview {
-    GenreListView(selectedIndex: .constant(0))
-}
+//#Preview {
+//    GenreListView(selectedIndex: .constant(0), genres: [])
+//}

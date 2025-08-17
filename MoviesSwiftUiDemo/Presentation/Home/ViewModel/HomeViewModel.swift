@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 // MARK: - typealias
 typealias HomeViewModelProtocol = HomeViewModelInput & HomeViewModelOutput
@@ -14,10 +15,47 @@ class HomeViewModel: ObservableObject, HomeViewModelProtocol {
     
     // MARK: - Variables
     private let coordiantor: HomeCoordinator
+    private let genreUseCase: GenreUseCaseProtocol
+    private var cancellables = Set<AnyCancellable>()
+    @Published private(set) var genres: [Genre] = []
+    @Published var selectedIndex: Int = 0
     
     // MARK: - Initiliazer
-    init(coordiantor: HomeCoordinator) {
+    init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol) {
         self.coordiantor = coordiantor
+        self.genreUseCase = genreUseCase
+    }
+    
+    func getGenre() {
+        Future<GenreModel, Error> { promise in
+            Task {
+                do {
+                    let response: GenreModel = try await self.genreUseCase.getGenres(with: nil)
+                    promise(.success(response))
+                } catch {
+                    promise(.failure(error))
+                }
+            }
+        }
+        .receive(on: DispatchQueue.main)
+        .sink(
+            receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error):
+                    if let baseError = error as? BaseError {
+                        print(baseError.getErrorMessage())
+                    } else {
+                        print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
+                    }
+                case .finished:
+                    break
+                }
+            },
+            receiveValue: { [weak self] response in
+                self?.genres = response.genres ?? []
+            }
+        )
+        .store(in: &cancellables)
     }
 }
 
@@ -26,9 +64,16 @@ extension HomeViewModel {
     func didTapMovie() {
         coordiantor.navigateToDetailsScreen()
     }
+    
+    func onAppear() {
+        getGenre()
+    }
+    
+    func setSelectedGenre(at index: Int) {
+        self.selectedIndex = index
+    }
 }
 
 // MARK: - HomeViewModel Output
 extension HomeViewModel {
-    
 }
