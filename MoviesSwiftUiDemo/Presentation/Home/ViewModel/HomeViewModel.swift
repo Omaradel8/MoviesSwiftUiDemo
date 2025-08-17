@@ -14,10 +14,12 @@ class HomeViewModel: ObservableObject, HomeViewModelProtocol {
     
     // MARK: - Variables
     private let coordiantor: HomeCoordinator
+    private let genreUseCase: GenreUseCaseProtocol
     
     // MARK: - Initiliazer
-    init(coordiantor: HomeCoordinator) {
+    init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol) {
         self.coordiantor = coordiantor
+        self.genreUseCase = genreUseCase
     }
 }
 

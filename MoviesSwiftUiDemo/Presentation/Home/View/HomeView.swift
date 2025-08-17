@@ -66,5 +66,5 @@ struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel:
         )
     }
     
-    HomeView(viewModel: HomeViewModel(coordiantor: HomeCoordinator(pathBinding: pathBinding)))
+    HomeView(viewModel: HomeViewModel(coordiantor: HomeCoordinator(pathBinding: pathBinding), genreUseCase: GenreUseCase(genreRepository: GenreRepository(networkManager: NetworkManager(), genreConfig: GenreConfig()))))
 }
