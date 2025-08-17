@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - HomeViewModelInput
 protocol HomeViewModelInput {
-    func didTapMovie()
+    func didTapMovie(at index: Int)
     func onAppear()
     func setSelectedGenre(at index: Int)
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 class HomeCoordinator: Coordinator {
-    func navigateToDetailsScreen() {
-        navigate(to: .MOVIEDETAILS(movieId: 0))
+    func navigateToDetailsScreen(movieId: Int) {
+        navigate(to: .MOVIEDETAILS(movieId: movieId))
     }
 }
