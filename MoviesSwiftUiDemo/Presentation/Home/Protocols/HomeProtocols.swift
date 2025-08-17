@@ -18,4 +18,6 @@ protocol HomeViewModelInput {
 protocol HomeViewModelOutput {
     var genres: [Genre] { get }
     var selectedIndex: Int { get set }
+    var filteredMovies: [Movie] { get }
+    var searchText: String { get set }
 }

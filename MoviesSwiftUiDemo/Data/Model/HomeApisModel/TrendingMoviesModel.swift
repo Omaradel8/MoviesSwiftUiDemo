@@ -34,6 +34,10 @@ struct Movie: Codable {
     let video: Bool?
     let voteAverage: Double?
     let voteCount: Int?
+    var posterFullPath: String? {
+        guard let path = posterPath else { return nil }
+        return "https://image.tmdb.org/t/p/w500\(path)"
+    }
 
     enum CodingKeys: String, CodingKey {
         case adult

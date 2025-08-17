@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel: ObservableObject {
+struct HomeView: View {
     
     @State private var searchText: String = ""
     
@@ -34,7 +34,7 @@ struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel:
             
             ScrollView {
                 
-                TextField("Search TMDB", text: $searchText)
+                TextField("Search TMDB", text: $viewModel.searchText)
                     .padding(10)
                     .background(Color(.systemGray6))
                     .cornerRadius(10)
@@ -43,10 +43,16 @@ struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel:
                 GenreListView(viewModel: viewModel)
                 
                 LazyVGrid(columns: columns, spacing: 10) {
-                    ForEach(filteredFilms, id: \.0) { title, year, imageName in
-                        FilmCardView(imageName: imageName, filmTitle: title, fileReleaseYear: year)
+                    ForEach(viewModel.filteredMovies.indices, id: \.self) { index in
+                        let movie = viewModel.filteredMovies[index]
+                        FilmCardView(movie: movie)
                             .onTapGesture {
                                 self.viewModel.didTapMovie()
+                            }
+                            .onAppear {
+                                if index == viewModel.filteredMovies.count - 1 {
+                                    viewModel.getTrendingMovies()
+                                }
                             }
                     }
                 }
@@ -68,5 +74,5 @@ struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel:
         )
     }
     
-    HomeView(viewModel: HomeViewModel(coordiantor: HomeCoordinator(pathBinding: pathBinding), genreUseCase: GenreUseCase(genreRepository: GenreRepository(networkManager: NetworkManager(), genreConfig: GenreConfig()))))
+    HomeView(viewModel: HomeViewModel(coordiantor: HomeCoordinator(pathBinding: pathBinding), genreUseCase: GenreUseCase(genreRepository: GenreRepository(networkManager: NetworkManager(), genreConfig: GenreConfig())), trendingMoviesUseCase: TrendingMoviesUseCase(trendingMoviesRepository: TrendingMoviesRepository(networkManager: NetworkManager(), trendingMoviesConfig: TrendingMoviesConfig()))))
 }

@@ -9,53 +9,116 @@ import Foundation
 import Combine
 
 // MARK: - typealias
-typealias HomeViewModelProtocol = HomeViewModelInput & HomeViewModelOutput
+typealias HomeViewModelProtocol = HomeViewModelInput & HomeViewModelOutput & ObservableObject
 
-class HomeViewModel: ObservableObject, HomeViewModelProtocol {
+class HomeViewModel: HomeViewModelProtocol {
     
     // MARK: - Variables
     private let coordiantor: HomeCoordinator
     private let genreUseCase: GenreUseCaseProtocol
+    private let trendingMoviesUseCase: TrendingMoviesUseCaseProtocol
     private var cancellables = Set<AnyCancellable>()
     @Published private(set) var genres: [Genre] = []
-    @Published var selectedIndex: Int = 0
+    @Published private(set) var trendingMovies: [Movie] = [] {
+        didSet{
+            self.filterMovies()
+        }
+    }
+    @Published private(set) var filteredMovies: [Movie] = []
+    @Published var selectedIndex: Int = 0 {
+        didSet {
+            guard !trendingMovies.isEmpty else { return }
+            self.filterMovies()
+        }
+    }
+    @Published var searchText: String = "" {
+        didSet{
+            self.filterMovies()
+        }
+    }
+    @Published private var isLoadingPage = false
+    private var lastRequestedPage: Int?
+    private var nextPage = 1
+    private var totalPages: Int?
     
     // MARK: - Initiliazer
-    init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol) {
+    init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol, trendingMoviesUseCase: TrendingMoviesUseCaseProtocol) {
         self.coordiantor = coordiantor
         self.genreUseCase = genreUseCase
+        self.trendingMoviesUseCase = trendingMoviesUseCase
     }
     
-    func getGenre() {
-        Future<GenreModel, Error> { promise in
-            Task {
-                do {
-                    let response: GenreModel = try await self.genreUseCase.getGenres(with: nil)
-                    promise(.success(response))
-                } catch {
-                    promise(.failure(error))
+    func getGenre() async {
+        Task {
+            do {
+                let response: GenreModel = try await genreUseCase.getGenres(with: nil)
+                await MainActor.run {
+                    self.genres = response.genres ?? []
                 }
+                self.getTrendingMovies()
             }
+            catch let baseError as BaseError {
+                print(baseError.getErrorMessage())
+           } catch {
+               print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
+           }
         }
-        .receive(on: DispatchQueue.main)
-        .sink(
-            receiveCompletion: { completion in
-                switch completion {
-                case .failure(let error):
-                    if let baseError = error as? BaseError {
-                        print(baseError.getErrorMessage())
-                    } else {
-                        print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
-                    }
-                case .finished:
-                    break
-                }
-            },
-            receiveValue: { [weak self] response in
-                self?.genres = response.genres ?? []
+    }
+
+    
+    func getTrendingMovies() {
+        Task {
+            guard !isLoadingPage else { return }
+            guard nextPage <= (totalPages ?? 1) else { return }
+            guard lastRequestedPage != nextPage else { return }
+            
+            self.lastRequestedPage = nextPage
+            
+            await MainActor.run {
+                self.isLoadingPage = true
             }
-        )
-        .store(in: &cancellables)
+            
+            defer {
+                Task { @MainActor in
+                    self.isLoadingPage = false
+                }
+            }
+            
+            do {
+                let response: TrendingMoviesModel = try await trendingMoviesUseCase.getTrendingMovies(with: nextPage)
+                await MainActor.run {
+                    self.trendingMovies.append(contentsOf: response.movies ?? [])
+                    self.nextPage += 1
+                    self.totalPages = response.totalPages
+                }
+            }
+            catch let baseError as BaseError {
+                print(baseError.getErrorMessage())
+           } catch {
+               print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
+           }
+        }
+    }
+
+    private func filterMoviesDueGenre() -> [Movie] {
+        return self.trendingMovies.filter({ $0.genreIDS?.contains(genres[selectedIndex].id ?? 0) ?? false })
+    }
+    
+    private func filterMovies() {
+        let filteredMoviesDueGenre = self.filterMoviesDueGenre()
+        if self.searchText.isEmpty {
+            self.filteredMovies = filteredMoviesDueGenre
+        }else{
+            self.filteredMovies = filteredMoviesDueGenre.filter( { $0.originalTitle?.lowercased().contains(searchText.lowercased()) ?? false } )
+        }
+        
+        maybeFetchNextPageIfNeeded()
+    }
+    
+    private func maybeFetchNextPageIfNeeded() {
+        if filteredMovies.count <= 4 {
+            getTrendingMovies()
+        }
     }
 }
 
@@ -66,7 +129,9 @@ extension HomeViewModel {
     }
     
     func onAppear() {
-        getGenre()
+        Task {
+            await getGenre()
+        }
     }
     
     func setSelectedGenre(at index: Int) {
