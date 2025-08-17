@@ -14,11 +14,17 @@ struct MovieDetailsView: View {
     var body: some View {
         ScrollView {
             // TOP POSTER
-            Image("poster")
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: .infinity)
-                .frame(height: 350)
+            
+            AsyncImage(url: URL(string: viewModel.movieDetails.backdropFullPath ?? "")) { image in
+                image
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 350)
+            } placeholder: {
+                ProgressView()
+                    .frame(height: 350)
+            }
             
             // MOVIE HEADER VIEW
             MovieHeaderView(imageName: "poster", title: "Movie Name", genres: "Genres")
