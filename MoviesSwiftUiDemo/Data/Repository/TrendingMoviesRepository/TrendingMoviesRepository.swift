@@ -24,6 +24,7 @@ class TrendingMoviesRepository: TrendingMoviesRepositoryProtocol {
     }
     
     func getTrendingMovies<T>(with data: Any?) async throws -> T where T : Decodable, T : Encodable {
-        try await networkManager.request(request: trendingMoviesConfig.request)
+        trendingMoviesConfig.updateRequestData(with: data)
+        return try await networkManager.request(request: trendingMoviesConfig.request)
     }
 }

@@ -36,7 +36,9 @@ class HomeViewModel: HomeViewModelProtocol {
             self.filterMovies()
         }
     }
-    private var currentPage = 1
+    @Published private var isLoadingPage = false
+    private var lastRequestedPage: Int?
+    private var nextPage = 1
     private var totalPages: Int?
     
     // MARK: - Initiliazer
@@ -66,12 +68,28 @@ class HomeViewModel: HomeViewModelProtocol {
     
     func getTrendingMovies() {
         Task {
+            guard !isLoadingPage else { return }
+            guard nextPage <= (totalPages ?? 1) else { return }
+            guard lastRequestedPage != nextPage else { return }
+            
+            self.lastRequestedPage = nextPage
+            
+            await MainActor.run {
+                self.isLoadingPage = true
+            }
+            
+            defer {
+                Task { @MainActor in
+                    self.isLoadingPage = false
+                }
+            }
+            
             do {
-                let response: TrendingMoviesModel = try await trendingMoviesUseCase.getTrendingMovies(with: nil)
+                let response: TrendingMoviesModel = try await trendingMoviesUseCase.getTrendingMovies(with: nextPage)
                 await MainActor.run {
                     self.trendingMovies.append(contentsOf: response.movies ?? [])
-                    self.currentPage += 1
-                    self.totalPages = 1
+                    self.nextPage += 1
+                    self.totalPages = response.totalPages
                 }
             }
             catch let baseError as BaseError {
@@ -92,6 +110,14 @@ class HomeViewModel: HomeViewModelProtocol {
             self.filteredMovies = filteredMoviesDueGenre
         }else{
             self.filteredMovies = filteredMoviesDueGenre.filter( { $0.originalTitle?.lowercased().contains(searchText.lowercased()) ?? false } )
+        }
+        
+        maybeFetchNextPageIfNeeded()
+    }
+    
+    private func maybeFetchNextPageIfNeeded() {
+        if filteredMovies.count <= 4 {
+            getTrendingMovies()
         }
     }
 }

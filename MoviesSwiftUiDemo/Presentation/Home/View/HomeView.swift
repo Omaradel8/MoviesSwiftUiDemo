@@ -43,10 +43,16 @@ struct HomeView: View {
                 GenreListView(viewModel: viewModel)
                 
                 LazyVGrid(columns: columns, spacing: 10) {
-                    ForEach(viewModel.filteredMovies, id: \.id) { movie in
+                    ForEach(viewModel.filteredMovies.indices, id: \.self) { index in
+                        let movie = viewModel.filteredMovies[index]
                         FilmCardView(movie: movie)
                             .onTapGesture {
                                 self.viewModel.didTapMovie()
+                            }
+                            .onAppear {
+                                if index == viewModel.filteredMovies.count - 1 {
+                                    viewModel.getTrendingMovies()
+                                }
                             }
                     }
                 }
