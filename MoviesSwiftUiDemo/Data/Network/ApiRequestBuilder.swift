@@ -18,6 +18,7 @@ class APIRequestBuilder {
         self.url = url
         self.method = method
         self.parameterEncoding = .url
+        setDefaultHeaders()
     }
     
     private func setDefaultHeaders() {
