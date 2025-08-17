@@ -16,10 +16,18 @@ class MovieDetailsViewModel: ObservableObject, MovieDetailsViewModelProtocol {
     private let coordiantor: MovieDetailsCoordinator
     private var movieId: Int?
     private let movieDetailsUseCase: MovieDetailsUseCaseProtocol
-    @Published var movieDetails: MovieDetailsModel = emptyMovie
+    @Published var movieDetails: MovieDetailsModel = emptyMovie {
+        didSet{
+            if movieDetails.id != emptyMovie.id {
+                loadingStatus = .STOP
+            }
+        }
+    }
     @Published var showErrorAlert: Bool = false
+    @Published var loadingStatus: LoadingStatus = .START
     var apiRequestError: String = "" {
         didSet {
+            loadingStatus = .STOP
             showErrorAlert = !apiRequestError.isEmpty
         }
     }
@@ -55,8 +63,15 @@ class MovieDetailsViewModel: ObservableObject, MovieDetailsViewModelProtocol {
 extension MovieDetailsViewModel {
     func onAppear() {
         Task {
+            await MainActor.run {
+                loadingStatus = .START
+            }
             await getMovieDetails()
         }
+    }
+    
+    func isLoading() -> Bool {
+        loadingStatus == .START
     }
 }
 

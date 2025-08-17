@@ -10,6 +10,7 @@ import Foundation
 // MARK: - MovieDetailsViewModelInput
 protocol MovieDetailsViewModelInput {
     func onAppear()
+    func isLoading() -> Bool
 }
 
 // MARK: - MovieDetailsViewModelOutput
