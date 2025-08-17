@@ -47,6 +47,7 @@ struct MovieDetailsView: View {
         .onAppear {
             viewModel.onAppear()
         }
+        .showErrorAlert(isPresented: $viewModel.showErrorAlert, errorMessage: viewModel.apiRequestError)
     }
 }
 

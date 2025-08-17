@@ -17,6 +17,12 @@ class MovieDetailsViewModel: ObservableObject, MovieDetailsViewModelProtocol {
     private var movieId: Int?
     private let movieDetailsUseCase: MovieDetailsUseCaseProtocol
     @Published var movieDetails: MovieDetailsModel = emptyMovie
+    @Published var showErrorAlert: Bool = false
+    var apiRequestError: String = "" {
+        didSet {
+            showErrorAlert = !apiRequestError.isEmpty
+        }
+    }
     
     // MARK: - Initiliazer
     init(coordiantor: MovieDetailsCoordinator, movieDetailsUseCase: MovieDetailsUseCaseProtocol) {
@@ -37,9 +43,9 @@ class MovieDetailsViewModel: ObservableObject, MovieDetailsViewModelProtocol {
                 }
             }
             catch let baseError as BaseError {
-                print(baseError.getErrorMessage())
+                self.apiRequestError = baseError.getErrorMessage()
            } catch {
-               print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
+               self.apiRequestError = BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage()
            }
         }
     }
