@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MovieDetailsView: View {
     
+    var viewModel: MovieDetailsViewModel
     
     var body: some View {
         ScrollView {
@@ -41,5 +42,13 @@ struct MovieDetailsView: View {
 }
 
 #Preview {
-    MovieDetailsView()
+    var path = NavigationPath()
+    var pathBinding: Binding<NavigationPath> {
+        Binding(
+            get: { path },
+            set: { path = $0}
+        )
+    }
+    
+    MovieDetailsView(viewModel: MovieDetailsViewModel(coordiantor: MovieDetailsCoordinator(pathBinding: pathBinding)))
 }

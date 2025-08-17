@@ -47,7 +47,7 @@ struct HomeView: View {
                         let movie = viewModel.filteredMovies[index]
                         FilmCardView(movie: movie)
                             .onTapGesture {
-                                self.viewModel.didTapMovie()
+                                self.viewModel.didTapMovie(at: index)
                             }
                             .onAppear {
                                 if index == viewModel.filteredMovies.count - 1 {
