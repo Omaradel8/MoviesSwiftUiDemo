@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MovieDetailsView: View {
     
-    var viewModel: MovieDetailsViewModel
+    @StateObject var viewModel: MovieDetailsViewModel
     
     var body: some View {
         ScrollView {
