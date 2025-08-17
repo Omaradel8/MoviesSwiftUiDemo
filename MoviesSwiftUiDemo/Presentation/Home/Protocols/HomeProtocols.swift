@@ -15,5 +15,5 @@ protocol HomeViewModelInput {
 
 // MARK: - HomeViewModelOutput
 protocol HomeViewModelOutput {
-
+    var genres: [Genre] { get }
 }

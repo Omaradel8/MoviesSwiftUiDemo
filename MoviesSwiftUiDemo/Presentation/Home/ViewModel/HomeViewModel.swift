@@ -17,7 +17,7 @@ class HomeViewModel: ObservableObject, HomeViewModelProtocol {
     private let coordiantor: HomeCoordinator
     private let genreUseCase: GenreUseCaseProtocol
     private var cancellables = Set<AnyCancellable>()
-    @Published private var genre: [Genre] = []
+    @Published private(set) var genres: [Genre] = []
     
     // MARK: - Initiliazer
     init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol) {
@@ -51,7 +51,7 @@ class HomeViewModel: ObservableObject, HomeViewModelProtocol {
                 }
             },
             receiveValue: { [weak self] response in
-                self?.genre = response.genres ?? []
+                self?.genres = response.genres ?? []
             }
         )
         .store(in: &cancellables)
