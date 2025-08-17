@@ -15,10 +15,12 @@ class MovieDetailsViewModel: ObservableObject, MovieDetailsViewModelProtocol {
     // MARK: - Variables
     private let coordiantor: MovieDetailsCoordinator
     private var movieId: Int?
+    private let movieDetailsUseCase: MovieDetailsUseCaseProtocol
     
     // MARK: - Initiliazer
-    init(coordiantor: MovieDetailsCoordinator) {
+    init(coordiantor: MovieDetailsCoordinator, movieDetailsUseCase: MovieDetailsUseCaseProtocol) {
         self.coordiantor = coordiantor
+        self.movieDetailsUseCase = movieDetailsUseCase
     }
     
     func setupMovieId(movieId: Int) {

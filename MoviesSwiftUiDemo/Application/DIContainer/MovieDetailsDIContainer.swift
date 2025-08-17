@@ -12,11 +12,26 @@ class MovieDetailsDIContainer {
     private init() {}
     
     func getMovieDetailsViewModel(with pathBinding: Binding<NavigationPath>) -> MovieDetailsViewModel {
-        MovieDetailsViewModel(coordiantor: getMovieDetailsCoordinator(with: pathBinding))
+        MovieDetailsViewModel(coordiantor: getMovieDetailsCoordinator(with: pathBinding), movieDetailsUseCase: getMovieDetailsUseCase())
     }
     
     private func getMovieDetailsCoordinator(with pathBinding: Binding<NavigationPath>) -> MovieDetailsCoordinator {
         MovieDetailsCoordinator(pathBinding: pathBinding)
     }
     
+    private func getMovieDetailsUseCase() -> MovieDetailsUseCaseProtocol {
+        return MovieDetailsUseCase(movieDetailsRepository: getMovieDetailsRepository())
+    }
+    
+    private func getMovieDetailsRepository() -> MovieDetailsRepositoryProtocol {
+        return MovieDetailsRepository(networkManager: getNetworkManger(), movieDetailsConfig: getMovieDetailsApiConfig())
+    }
+    
+    private func getNetworkManger() -> NetworkManagerProtocol {
+        return NetworkManager()
+    }
+    
+    private func getMovieDetailsApiConfig() -> APIEndpointConfig {
+        return MovieDetailsConfig()
+    }
 }
