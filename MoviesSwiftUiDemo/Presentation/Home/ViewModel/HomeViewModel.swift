@@ -46,38 +46,23 @@ class HomeViewModel: HomeViewModelProtocol {
         self.trendingMoviesUseCase = trendingMoviesUseCase
     }
     
-    func getGenre() {
-        Future<GenreModel, Error> { promise in
-            Task {
-                do {
-                    let response: GenreModel = try await self.genreUseCase.getGenres(with: nil)
-                    promise(.success(response))
-                } catch {
-                    promise(.failure(error))
+    func getGenre() async {
+        Task {
+            do {
+                let response: GenreModel = try await genreUseCase.getGenres(with: nil)
+                await MainActor.run {
+                    self.genres = response.genres ?? []
                 }
+                self.getTrendingMovies()
             }
+            catch let baseError as BaseError {
+                print(baseError.getErrorMessage())
+           } catch {
+               print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
+           }
         }
-        .receive(on: DispatchQueue.main)
-        .sink(
-            receiveCompletion: { completion in
-                switch completion {
-                case .failure(let error):
-                    if let baseError = error as? BaseError {
-                        print(baseError.getErrorMessage())
-                    } else {
-                        print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
-                    }
-                case .finished:
-                    break
-                }
-            },
-            receiveValue: { [weak self] response in
-                self?.genres = response.genres ?? []
-                self?.getTrendingMovies()
-            }
-        )
-        .store(in: &cancellables)
     }
+
     
     func getTrendingMovies() {
         Future<TrendingMoviesModel, Error> { promise in
@@ -134,7 +119,9 @@ extension HomeViewModel {
     }
     
     func onAppear() {
-        getGenre()
+        Task {
+            await getGenre()
+        }
     }
     
     func setSelectedGenre(at index: Int) {
