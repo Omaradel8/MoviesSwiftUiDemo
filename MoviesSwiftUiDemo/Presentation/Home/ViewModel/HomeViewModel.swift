@@ -19,7 +19,20 @@ class HomeViewModel: ObservableObject, HomeViewModelProtocol {
     private let trendingMoviesUseCase: TrendingMoviesUseCaseProtocol
     private var cancellables = Set<AnyCancellable>()
     @Published private(set) var genres: [Genre] = []
-    @Published var selectedIndex: Int = 0
+    @Published private(set) var trendingMovies: [Movie] = [] {
+        didSet{
+            self.filterMoviesDueGenre()
+        }
+    }
+    @Published private(set) var filteredMovies: [Movie] = []
+    @Published var selectedIndex: Int = 0 {
+        didSet {
+            guard !trendingMovies.isEmpty else { return }
+            self.filterMoviesDueGenre()
+        }
+    }
+    private var currentPage = 1
+    private var totalPages: Int?
     
     // MARK: - Initiliazer
     init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol, trendingMoviesUseCase: TrendingMoviesUseCaseProtocol) {
@@ -55,9 +68,49 @@ class HomeViewModel: ObservableObject, HomeViewModelProtocol {
             },
             receiveValue: { [weak self] response in
                 self?.genres = response.genres ?? []
+                self?.getTrendingMovies()
             }
         )
         .store(in: &cancellables)
+    }
+    
+    func getTrendingMovies() {
+        Future<TrendingMoviesModel, Error> { promise in
+            Task {
+                do {
+                    let response: TrendingMoviesModel = try await self.trendingMoviesUseCase.getTrendingMovies(with: nil)
+                    promise(.success(response))
+                } catch {
+                    promise(.failure(error))
+                }
+            }
+        }
+        .receive(on: DispatchQueue.main)
+        .sink(
+            receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error):
+                    if let baseError = error as? BaseError {
+                        print(baseError.getErrorMessage())
+                    } else {
+                        print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
+                    }
+                case .finished:
+                    break
+                }
+            },
+            receiveValue: { [weak self] response in
+                self?.trendingMovies.append(contentsOf: response.movies ?? [])
+                self?.currentPage += 1
+                self?.totalPages = 1
+            }
+        )
+        .store(in: &cancellables)
+    }
+
+    private func filterMoviesDueGenre() {
+        self.filteredMovies = self.trendingMovies.filter({ $0.genreIDS?.contains(genres[selectedIndex].id ?? 0) ?? false })
+        print(filteredMovies.count)
     }
 }
 

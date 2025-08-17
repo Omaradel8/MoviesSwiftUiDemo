@@ -13,7 +13,7 @@ class TrendingMoviesConfig: APIEndpointConfig {
     
     // MARK: - Request
     var request: APIRequest {
-        return APIRequestBuilder(url: URL(string: EndPointsURLs.getGenres()), method: .GET)
+        return APIRequestBuilder(url: URL(string: EndPointsURLs.getTrendingMovies()), method: .GET)
             .setParameters(["page": page ?? 1], encoding: .url)
             .build()
     }
