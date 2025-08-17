@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - MovieDetailsRepository Protocol
 protocol MovieDetailsRepositoryProtocol {
-    func getTrendingMovies<T: Codable>(with data: Any?) async throws -> T
+    func getMovieDetails<T: Codable>(with data: Any?) async throws -> T
 }
 
 // MARK: - MovieDetailsRepository
@@ -23,7 +23,7 @@ class MovieDetailsRepository: MovieDetailsRepositoryProtocol {
         self.movieDetailsConfig = movieDetailsConfig
     }
     
-    func getTrendingMovies<T>(with data: Any?) async throws -> T where T : Decodable, T : Encodable {
+    func getMovieDetails<T>(with data: Any?) async throws -> T where T : Decodable, T : Encodable {
         movieDetailsConfig.updateRequestData(with: data)
         return try await networkManager.request(request: movieDetailsConfig.request)
     }
