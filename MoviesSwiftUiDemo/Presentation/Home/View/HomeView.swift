@@ -54,6 +54,9 @@ struct HomeView<HomeViewModel: HomeViewModelProtocol>: View where HomeViewModel:
                 .padding(.horizontal)
             }
         }
+        .onAppear {
+            viewModel.onAppear()
+        }
     }
 }
 
