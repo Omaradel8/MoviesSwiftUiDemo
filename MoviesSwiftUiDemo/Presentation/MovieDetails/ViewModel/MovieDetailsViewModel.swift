@@ -43,19 +43,26 @@ class MovieDetailsViewModel: ObservableObject, MovieDetailsViewModelProtocol {
     }
     
     func getMovieDetails() async {
-        Task {
-            do {
-                let response: MovieDetailsModel = try await movieDetailsUseCase.getMovieDetails(with: movieId)
-                movieDetailsUseCase.saveMovieDetailsIfNeeded(response)
-                await MainActor.run {
-                    self.movieDetails = response
+        if NetworkMonitor.shared.isConnected {
+            Task {
+                do {
+                    let response: MovieDetailsModel = try await movieDetailsUseCase.getMovieDetails(with: movieId)
+                    movieDetailsUseCase.saveMovieDetailsIfNeeded(response)
+                    await MainActor.run {
+                        self.movieDetails = response
+                    }
                 }
+                catch let baseError as BaseError {
+                    self.apiRequestError = baseError.getErrorMessage()
+               } catch {
+                   self.apiRequestError = BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage()
+               }
             }
-            catch let baseError as BaseError {
-                self.apiRequestError = baseError.getErrorMessage()
-           } catch {
-               self.apiRequestError = BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage()
-           }
+        }else{
+            let movieDetails = MovieDetailsCoreDataManager.shared.fetchMovieDetails(by: movieId ?? 0)
+            await MainActor.run {
+                self.movieDetails = movieDetails ?? emptyMovie
+            }
         }
     }
 }
