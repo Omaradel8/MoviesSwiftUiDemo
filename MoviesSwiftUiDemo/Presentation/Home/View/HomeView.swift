@@ -28,6 +28,8 @@ struct HomeView: View {
     
     var body: some View {
         ZStack {
+                
+            loadingView
             
             Color.black
                 .ignoresSafeArea()
@@ -62,6 +64,17 @@ struct HomeView: View {
         .onAppear {
             viewModel.onAppear()
         }
+        .showErrorAlert(isPresented: $viewModel.showErrorAlert, errorMessage: viewModel.apiRequestError)
+    }
+    
+    @ViewBuilder
+    var loadingView: some View {
+        if viewModel.isLoading() {
+            ProgressView()
+                .scaleEffect(3)
+                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+        }
+
     }
 }
 

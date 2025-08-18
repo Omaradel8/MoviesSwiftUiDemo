@@ -22,6 +22,7 @@ class HomeViewModel: HomeViewModelProtocol {
     @Published private(set) var genres: [Genre] = []
     @Published private(set) var trendingMovies: [Movie] = [] {
         didSet{
+            loadingStatus = .STOP
             self.filterMovies()
         }
     }
@@ -38,6 +39,14 @@ class HomeViewModel: HomeViewModelProtocol {
         }
     }
     @Published private var isLoadingPage = false
+    @Published var showErrorAlert: Bool = false
+    @Published var loadingStatus: LoadingStatus = .START
+    var apiRequestError: String = "" {
+        didSet {
+            loadingStatus = .STOP
+            showErrorAlert = !apiRequestError.isEmpty
+        }
+    }
     private var lastRequestedPage: Int?
     private var nextPage = 1
     private var totalPages: Int?
@@ -71,9 +80,9 @@ class HomeViewModel: HomeViewModelProtocol {
                 self.getTrendingMovies()
             }
             catch let baseError as BaseError {
-                print(baseError.getErrorMessage())
+                self.apiRequestError = baseError.getErrorMessage()
            } catch {
-               print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
+               self.apiRequestError = BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage()
            }
         }
     }
@@ -101,6 +110,7 @@ class HomeViewModel: HomeViewModelProtocol {
     }
     
     private func fetchOnlinTrendingMovies() {
+        loadingStatus = .START
         Task { [weak self] in
             guard let self = self else { return }
             guard !isLoadingPage else { return }
@@ -131,9 +141,9 @@ class HomeViewModel: HomeViewModelProtocol {
                 }
             }
             catch let baseError as BaseError {
-                print(baseError.getErrorMessage())
+                self.apiRequestError = baseError.getErrorMessage()
            } catch {
-               print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
+               self.apiRequestError = BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage()
            }
         }
 
@@ -179,6 +189,7 @@ extension HomeViewModel {
         guard !hasLoadedData else { return }
 
         Task {
+            loadingStatus = .START
             await getGenre()
         }
     }
@@ -190,4 +201,7 @@ extension HomeViewModel {
 
 // MARK: - HomeViewModel Output
 extension HomeViewModel {
+    func isLoading() -> Bool {
+        loadingStatus == .START
+    }
 }
