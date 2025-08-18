@@ -110,7 +110,6 @@ class HomeViewModel: HomeViewModelProtocol {
     }
     
     private func fetchOnlinTrendingMovies() {
-        loadingStatus = .START
         Task { [weak self] in
             guard let self = self else { return }
             guard !isLoadingPage else { return }
@@ -120,6 +119,7 @@ class HomeViewModel: HomeViewModelProtocol {
             self.lastRequestedPage = nextPage
             
             await MainActor.run {
+                self.loadingStatus = .START
                 self.isLoadingPage = true
             }
             
@@ -189,7 +189,9 @@ extension HomeViewModel {
         guard !hasLoadedData else { return }
 
         Task {
-            loadingStatus = .START
+            await MainActor.run {
+                self.loadingStatus = .START
+            }
             await getGenre()
         }
     }
