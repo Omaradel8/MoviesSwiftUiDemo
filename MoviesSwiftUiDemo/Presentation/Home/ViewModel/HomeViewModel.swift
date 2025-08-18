@@ -53,37 +53,44 @@ class HomeViewModel: HomeViewModelProtocol {
     
     func getGenre() async {
         if NetworkMonitor.shared.isConnected {
-            Task { [weak self] in
-                guard let self = self else { return }
-                do {
-                    let response: GenreModel = try await genreUseCase.getGenres(with: nil)
-                    genreUseCase.saveGenresIfNeeded(response, context: context)
-                    await MainActor.run {
-                        self.genres = response.genres ?? []
-                    }
-                    self.getTrendingMovies()
-                }
-                catch let baseError as BaseError {
-                    print(baseError.getErrorMessage())
-               } catch {
-                   print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
-               }
-            }
+            await getOnlineGenre()
         }else{
-            let localGenres = genreUseCase.fetchLocalGenres(context: context)
-            
-            let mappedGenres: [Genre] = localGenres.compactMap {
-                guard let id = $0.id?.intValue, let name = $0.name else { return nil }
-                return Genre(id: id, name: name)
-            }
-            
-            await MainActor.run {
-                self.genres = mappedGenres
-            }
-            getTrendingMovies()
+            await getOfflineGenre()
         }
     }
-
+    
+    private func getOnlineGenre() async {
+        Task { [weak self] in
+            guard let self = self else { return }
+            do {
+                let response: GenreModel = try await genreUseCase.getGenres(with: nil)
+                genreUseCase.saveGenresIfNeeded(response, context: context)
+                await MainActor.run {
+                    self.genres = response.genres ?? []
+                }
+                self.getTrendingMovies()
+            }
+            catch let baseError as BaseError {
+                print(baseError.getErrorMessage())
+           } catch {
+               print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
+           }
+        }
+    }
+    
+    private func getOfflineGenre() async {
+        let localGenres = genreUseCase.fetchLocalGenres(context: context)
+        
+        let mappedGenres: [Genre] = localGenres.compactMap {
+            guard let id = $0.id?.intValue, let name = $0.name else { return nil }
+            return Genre(id: id, name: name)
+        }
+        
+        await MainActor.run {
+            self.genres = mappedGenres
+        }
+        getTrendingMovies()
+    }
     
     func getTrendingMovies() {
         if NetworkMonitor.shared.isConnected {
