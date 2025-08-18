@@ -53,7 +53,8 @@ class HomeViewModel: HomeViewModelProtocol {
     
     func getGenre() async {
         if NetworkMonitor.shared.isConnected {
-            Task {
+            Task { [weak self] in
+                guard let self = self else { return }
                 do {
                     let response: GenreModel = try await genreUseCase.getGenres(with: nil)
                     genreUseCase.saveGenresIfNeeded(response, context: context)
