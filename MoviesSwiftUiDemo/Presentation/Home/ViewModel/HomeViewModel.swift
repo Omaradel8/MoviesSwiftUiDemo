@@ -42,6 +42,7 @@ class HomeViewModel: HomeViewModelProtocol {
     private var nextPage = 1
     private var totalPages: Int?
     private let context: NSManagedObjectContext = PersistenceController.shared.context
+    private var hasLoadedData = false
 
     // MARK: - Initiliazer
     init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol, trendingMoviesUseCase: TrendingMoviesUseCaseProtocol) {
@@ -110,6 +111,7 @@ class HomeViewModel: HomeViewModelProtocol {
                         self.trendingMovies.append(contentsOf: response.movies ?? [])
                         self.nextPage += 1
                         self.totalPages = response.totalPages
+                        self.hasLoadedData = true
                     }
                 }
                 catch let baseError as BaseError {
@@ -155,6 +157,8 @@ extension HomeViewModel {
     }
     
     func onAppear() {
+        guard !hasLoadedData else { return }
+
         Task {
             await getGenre()
         }
