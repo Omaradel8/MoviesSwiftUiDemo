@@ -130,12 +130,12 @@ class HomeViewModel: HomeViewModelProtocol {
         }
     }
 
-    private func filterMoviesDueGenre() -> [Movie] {
+    private func filterMoviesBySelectedGenre() -> [Movie] {
         return self.trendingMovies.filter({ $0.genreIDS?.contains(genres[selectedIndex].id ?? 0) ?? false })
     }
     
     private func filterMovies() {
-        let filteredMoviesDueGenre = self.filterMoviesDueGenre()
+        let filteredMoviesDueGenre = self.filterMoviesBySelectedGenre()
         if self.searchText.isEmpty {
             self.filteredMovies = filteredMoviesDueGenre
         }else{
