@@ -77,7 +77,7 @@ class HomeViewModel: HomeViewModelProtocol {
             
             await MainActor.run {
                 self.genres = mappedGenres
-            }            
+            }
         }
     }
 
@@ -102,6 +102,13 @@ class HomeViewModel: HomeViewModelProtocol {
             
             do {
                 let response: TrendingMoviesModel = try await trendingMoviesUseCase.getTrendingMovies(with: nextPage)
+                // Store in Core Data on background thread
+                Task.detached {
+                    if let movies = response.movies {
+                        CoreDataMovieManager.shared.saveMovies(movies)
+                    }
+                }
+                
                 await MainActor.run {
                     self.trendingMovies.append(contentsOf: response.movies ?? [])
                     self.nextPage += 1

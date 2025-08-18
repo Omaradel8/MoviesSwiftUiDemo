@@ -20,7 +20,7 @@ final class CoreDataMovieManager {
         let movieIDs = movies.compactMap { $0.id }
 
         // Fetch all existing movies with matching IDs
-        let fetchRequest: NSFetchRequest<MoviesEntity> = MoviesEntity.fetchRequest()
+        let fetchRequest: NSFetchRequest<Movies> = Movies.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id IN %@", movieIDs)
 
         do {
@@ -34,7 +34,7 @@ final class CoreDataMovieManager {
             }
 
             for movie in newMovies {
-                let newMovie = MoviesEntity(context: context)
+                let newMovie = Movies(context: context)
                 newMovie.id = Int32(movie.id ?? 0)
                 newMovie.title = movie.title
                 newMovie.overview = movie.overview
@@ -48,7 +48,7 @@ final class CoreDataMovieManager {
                 newMovie.voteAverage = movie.voteAverage ?? 0
                 newMovie.voteCount = Int32(movie.voteCount ?? 0)
                 newMovie.popularity = movie.popularity ?? 0
-                newMovie.genreIDS = movie.genreIDS
+                newMovie.genreIDS = movie.genreIDS as? NSArray
             }
 
             if context.hasChanges {
@@ -63,8 +63,8 @@ final class CoreDataMovieManager {
     }
 
     // MARK: - Fetch All Movies
-    func fetchAllMovies() -> [MoviesEntity] {
-        let fetchRequest: NSFetchRequest<MoviesEntity> = MoviesEntity.fetchRequest()
+    func fetchAllMovies() -> [Movies] {
+        let fetchRequest: NSFetchRequest<Movies> = Movies.fetchRequest()
 
         do {
             let movies = try context.fetch(fetchRequest)
