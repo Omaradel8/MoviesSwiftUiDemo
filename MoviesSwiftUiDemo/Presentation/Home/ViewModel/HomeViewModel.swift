@@ -86,7 +86,8 @@ class HomeViewModel: HomeViewModelProtocol {
     
     func getTrendingMovies() {
         if NetworkMonitor.shared.isConnected {
-            Task {
+            Task { [weak self] in
+                guard let self = self else { return }
                 guard !isLoadingPage else { return }
                 guard nextPage <= (totalPages ?? 1) else { return }
                 guard lastRequestedPage != nextPage else { return }
