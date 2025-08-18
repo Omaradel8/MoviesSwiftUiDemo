@@ -62,16 +62,35 @@ final class CoreDataMovieManager {
         }
     }
 
-    // MARK: - Fetch All Movies
-    func fetchAllMovies() -> [Movies] {
+    func fetchAllMovies() -> [Movie] {
         let fetchRequest: NSFetchRequest<Movies> = Movies.fetchRequest()
 
         do {
-            let movies = try context.fetch(fetchRequest)
+            let movieEntities = try context.fetch(fetchRequest)
+            let movies: [Movie] = movieEntities.map { entity in
+                // Map Movies entity -> Movie struct
+                Movie(
+                    adult: entity.adult,
+                    backdropPath: entity.backdropPath,
+                    genreIDS: entity.genreIDS as? [Int],
+                    id: Int(entity.id),
+                    originalLanguage: entity.originalLanguage,
+                    originalTitle: entity.originalTitle,
+                    overview: entity.overview,
+                    popularity: entity.popularity,
+                    posterPath: entity.posterPath,
+                    releaseDate: entity.releaseDate,
+                    title: entity.title,
+                    video: entity.video,
+                    voteAverage: entity.voteAverage,
+                    voteCount: Int(entity.voteCount)
+                )
+            }
             return movies
         } catch {
             print("❌ Failed to fetch movies: \(error)")
             return []
         }
     }
+
 }
