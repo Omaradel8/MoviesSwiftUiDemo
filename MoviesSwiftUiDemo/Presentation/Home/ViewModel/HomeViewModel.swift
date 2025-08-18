@@ -102,12 +102,7 @@ class HomeViewModel: HomeViewModelProtocol {
             
             do {
                 let response: TrendingMoviesModel = try await trendingMoviesUseCase.getTrendingMovies(with: nextPage)
-                // Store in Core Data on background thread
-                Task.detached {
-                    if let movies = response.movies {
-                        CoreDataMovieManager.shared.saveMovies(movies)
-                    }
-                }
+                trendingMoviesUseCase.saveMoviesIfNeeded(response.movies ?? [], context: context)
                 
                 await MainActor.run {
                     self.trendingMovies.append(contentsOf: response.movies ?? [])
