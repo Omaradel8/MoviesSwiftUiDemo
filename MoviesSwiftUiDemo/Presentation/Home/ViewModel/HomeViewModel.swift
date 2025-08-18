@@ -51,20 +51,33 @@ class HomeViewModel: HomeViewModelProtocol {
     }
     
     func getGenre() async {
-        Task {
-            do {
-                let response: GenreModel = try await genreUseCase.getGenres(with: nil)
-                genreUseCase.saveGenresIfNeeded(response, context: context)
-                await MainActor.run {
-                    self.genres = response.genres ?? []
+        if NetworkMonitor.shared.isConnected {
+            Task {
+                do {
+                    let response: GenreModel = try await genreUseCase.getGenres(with: nil)
+                    genreUseCase.saveGenresIfNeeded(response, context: context)
+                    await MainActor.run {
+                        self.genres = response.genres ?? []
+                    }
+                    self.getTrendingMovies()
                 }
-                self.getTrendingMovies()
+                catch let baseError as BaseError {
+                    print(baseError.getErrorMessage())
+               } catch {
+                   print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
+               }
             }
-            catch let baseError as BaseError {
-                print(baseError.getErrorMessage())
-           } catch {
-               print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
-           }
+        }else{
+            let localGenres = genreUseCase.fetchLocalGenres(context: context)
+            
+            let mappedGenres: [Genre] = localGenres.compactMap {
+                guard let id = $0.id?.intValue, let name = $0.name else { return nil }
+                return Genre(id: id, name: name)
+            }
+            
+            await MainActor.run {
+                self.genres = mappedGenres
+            }            
         }
     }
 
