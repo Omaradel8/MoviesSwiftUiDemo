@@ -46,6 +46,7 @@ class MovieDetailsViewModel: ObservableObject, MovieDetailsViewModelProtocol {
         Task {
             do {
                 let response: MovieDetailsModel = try await movieDetailsUseCase.getMovieDetails(with: movieId)
+                movieDetailsUseCase.saveMovieDetailsIfNeeded(response)
                 await MainActor.run {
                     self.movieDetails = response
                 }

@@ -39,6 +39,62 @@ final class MovieDetailsCoreDataManager {
             }
         }
     }
+    
+    func saveMovieDetails(_ model: MovieDetailsModel) {
+        // Check if movie already exists to avoid duplicates
+        let request: NSFetchRequest<MovieDetailsEntity> = MovieDetailsEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %d", model.id ?? 0)
+
+        do {
+            let results = try context.fetch(request)
+            let movieEntity = results.first ?? MovieDetailsEntity(context: context)
+
+            // Set properties
+            movieEntity.id = Int64(model.id ?? 0)
+            movieEntity.title = model.title
+            movieEntity.adult = model.adult ?? false
+            movieEntity.backdropPath = model.backdropPath
+            movieEntity.budget = Int64(model.budget ?? 0)
+            movieEntity.homepage = model.homepage
+            movieEntity.imdbID = model.imdbID
+            movieEntity.originCountry = model.originCountry as NSArray?
+            movieEntity.originalLanguage = model.originalLanguage
+            movieEntity.originalTitle = model.originalTitle
+            movieEntity.overview = model.overview
+            movieEntity.popularity = model.popularity ?? 0
+            movieEntity.posterPath = model.posterPath
+            movieEntity.releaseDate = model.releaseDate
+            movieEntity.revenue = Int64(model.revenue ?? 0)
+            movieEntity.runtime = Int64(model.runtime ?? 0)
+            movieEntity.status = model.status
+            movieEntity.tagline = model.tagline
+            movieEntity.video = model.video ?? false
+            movieEntity.voteAverage = model.voteAverage ?? 0
+            movieEntity.voteCount = Int64(model.voteCount ?? 0)
+
+            // MARK: - Save Genres
+            if let genres = model.genres {
+                for genre in genres {
+                    let fetchGenreRequest: NSFetchRequest<MoviesGenre> = MoviesGenre.fetchRequest()
+                    fetchGenreRequest.predicate = NSPredicate(format: "id == %d", genre.id ?? 0)
+
+                    let existingGenres = try context.fetch(fetchGenreRequest)
+                    let genreEntity = existingGenres.first ?? MoviesGenre(context: context)
+                    genreEntity.name = genre.name
+
+                    movieEntity.addToGenres(genreEntity)
+                }
+            }
+
+            print("✅ Saved \(movieEntity.title ?? "") movie.")
+            // Save to Core Data
+            saveContext()
+
+        } catch {
+            print("❌ Error saving movie details: \(error)")
+        }
+    }
+
 
     func fetchMovieDetails(by id: Int) -> MovieDetailsModel? {
         let request: NSFetchRequest<MovieDetailsEntity> = MovieDetailsEntity.fetchRequest()
