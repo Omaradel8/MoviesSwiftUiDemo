@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import CoreData
 
 // MARK: - typealias
 typealias HomeViewModelProtocol = HomeViewModelInput & HomeViewModelOutput & ObservableObject
@@ -40,7 +41,8 @@ class HomeViewModel: HomeViewModelProtocol {
     private var lastRequestedPage: Int?
     private var nextPage = 1
     private var totalPages: Int?
-    
+    private let context: NSManagedObjectContext = PersistenceController.shared.context
+
     // MARK: - Initiliazer
     init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol, trendingMoviesUseCase: TrendingMoviesUseCaseProtocol) {
         self.coordiantor = coordiantor
@@ -52,6 +54,7 @@ class HomeViewModel: HomeViewModelProtocol {
         Task {
             do {
                 let response: GenreModel = try await genreUseCase.getGenres(with: nil)
+                genreUseCase.saveGenresIfNeeded(response, context: context)
                 await MainActor.run {
                     self.genres = response.genres ?? []
                 }
