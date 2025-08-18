@@ -6,10 +6,13 @@
 //
 
 import Foundation
+import CoreData
 
 // MARK: - TrendingMoviesUseCase Protocol
 protocol TrendingMoviesUseCaseProtocol {
     func getTrendingMovies<T: Codable>(with data: Any?) async throws -> T
+    func saveMoviesIfNeeded(_ model: [Movie], context: NSManagedObjectContext)
+    func fetchLocalMovies(context: NSManagedObjectContext) -> [Movie]
 }
 
 class TrendingMoviesUseCase: TrendingMoviesUseCaseProtocol {
@@ -22,5 +25,13 @@ class TrendingMoviesUseCase: TrendingMoviesUseCaseProtocol {
     
     func getTrendingMovies<T>(with data: Any?) async throws -> T where T : Decodable, T : Encodable {
         try await trendingMoviesRepository.getTrendingMovies(with: data)
+    }
+    
+    func saveMoviesIfNeeded(_ model: [Movie], context: NSManagedObjectContext) {
+        trendingMoviesRepository.saveMoviesIfNeeded(model, context: context)
+    }
+    
+    func fetchLocalMovies(context: NSManagedObjectContext) -> [Movie] {
+        trendingMoviesRepository.fetchLocalMovies(context: context)
     }
 }

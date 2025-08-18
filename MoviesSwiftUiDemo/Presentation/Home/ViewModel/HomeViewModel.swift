@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import CoreData
 
 // MARK: - typealias
 typealias HomeViewModelProtocol = HomeViewModelInput & HomeViewModelOutput & ObservableObject
@@ -40,7 +41,8 @@ class HomeViewModel: HomeViewModelProtocol {
     private var lastRequestedPage: Int?
     private var nextPage = 1
     private var totalPages: Int?
-    
+    private let context: NSManagedObjectContext = PersistenceController.shared.context
+
     // MARK: - Initiliazer
     init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol, trendingMoviesUseCase: TrendingMoviesUseCaseProtocol) {
         self.coordiantor = coordiantor
@@ -49,19 +51,33 @@ class HomeViewModel: HomeViewModelProtocol {
     }
     
     func getGenre() async {
-        Task {
-            do {
-                let response: GenreModel = try await genreUseCase.getGenres(with: nil)
-                await MainActor.run {
-                    self.genres = response.genres ?? []
+        if NetworkMonitor.shared.isConnected {
+            Task {
+                do {
+                    let response: GenreModel = try await genreUseCase.getGenres(with: nil)
+                    genreUseCase.saveGenresIfNeeded(response, context: context)
+                    await MainActor.run {
+                        self.genres = response.genres ?? []
+                    }
+                    self.getTrendingMovies()
                 }
-                self.getTrendingMovies()
+                catch let baseError as BaseError {
+                    print(baseError.getErrorMessage())
+               } catch {
+                   print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
+               }
             }
-            catch let baseError as BaseError {
-                print(baseError.getErrorMessage())
-           } catch {
-               print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
-           }
+        }else{
+            let localGenres = genreUseCase.fetchLocalGenres(context: context)
+            
+            let mappedGenres: [Genre] = localGenres.compactMap {
+                guard let id = $0.id?.intValue, let name = $0.name else { return nil }
+                return Genre(id: id, name: name)
+            }
+            
+            await MainActor.run {
+                self.genres = mappedGenres
+            }
         }
     }
 
@@ -86,6 +102,8 @@ class HomeViewModel: HomeViewModelProtocol {
             
             do {
                 let response: TrendingMoviesModel = try await trendingMoviesUseCase.getTrendingMovies(with: nextPage)
+                trendingMoviesUseCase.saveMoviesIfNeeded(response.movies ?? [], context: context)
+                
                 await MainActor.run {
                     self.trendingMovies.append(contentsOf: response.movies ?? [])
                     self.nextPage += 1

@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import CoreData
 
 // MARK: - MovieDetailsUseCase Protocol
 protocol MovieDetailsUseCaseProtocol {
     func getMovieDetails<T: Codable>(with data: Any?) async throws -> T
+    func saveMovieDetailsIfNeeded(_ model: MovieDetailsModel)
 }
 
 class MovieDetailsUseCase: MovieDetailsUseCaseProtocol {
@@ -22,5 +24,9 @@ class MovieDetailsUseCase: MovieDetailsUseCaseProtocol {
     
     func getMovieDetails<T>(with data: Any?) async throws -> T where T : Decodable, T : Encodable {
         try await movieDetailsRepository.getMovieDetails(with: data)
+    }
+    
+    func saveMovieDetailsIfNeeded(_ model: MovieDetailsModel) {
+        movieDetailsRepository.saveMovieDetailsIfNeeded(model)
     }
 }
