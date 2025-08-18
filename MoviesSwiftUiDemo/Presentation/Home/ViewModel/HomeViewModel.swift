@@ -15,7 +15,7 @@ typealias HomeViewModelProtocol = HomeViewModelInput & HomeViewModelOutput & Obs
 class HomeViewModel: HomeViewModelProtocol {
     
     // MARK: - Variables
-    private let coordiantor: HomeCoordinator
+    private let coordinator: HomeCoordinator
     private let genreUseCase: GenreUseCaseProtocol
     private let trendingMoviesUseCase: TrendingMoviesUseCaseProtocol
     private var cancellables = Set<AnyCancellable>()
@@ -45,8 +45,8 @@ class HomeViewModel: HomeViewModelProtocol {
     private var hasLoadedData = false
 
     // MARK: - Initiliazer
-    init(coordiantor: HomeCoordinator, genreUseCase: GenreUseCaseProtocol, trendingMoviesUseCase: TrendingMoviesUseCaseProtocol) {
-        self.coordiantor = coordiantor
+    init(coordinator: HomeCoordinator, genreUseCase: GenreUseCaseProtocol, trendingMoviesUseCase: TrendingMoviesUseCaseProtocol) {
+        self.coordinator = coordinator
         self.genreUseCase = genreUseCase
         self.trendingMoviesUseCase = trendingMoviesUseCase
     }
@@ -153,7 +153,7 @@ class HomeViewModel: HomeViewModelProtocol {
 // MARK: - HomeViewModel Input
 extension HomeViewModel {
     func didTapMovie(at index: Int) {
-        coordiantor.navigateToDetailsScreen(movieId: self.filteredMovies[index].id ?? 0)
+        coordinator.navigateToDetailsScreen(movieId: self.filteredMovies[index].id ?? 0)
     }
     
     func onAppear() {

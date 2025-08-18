@@ -74,5 +74,5 @@ struct HomeView: View {
         )
     }
     
-    HomeView(viewModel: HomeViewModel(coordiantor: HomeCoordinator(pathBinding: pathBinding), genreUseCase: GenreUseCase(genreRepository: GenreRepository(networkManager: NetworkManager(), genreConfig: GenreConfig())), trendingMoviesUseCase: TrendingMoviesUseCase(trendingMoviesRepository: TrendingMoviesRepository(networkManager: NetworkManager(), trendingMoviesConfig: TrendingMoviesConfig()))))
+    HomeView(viewModel: HomeViewModel(coordinator: HomeCoordinator(pathBinding: pathBinding), genreUseCase: GenreUseCase(genreRepository: GenreRepository(networkManager: NetworkManager(), genreConfig: GenreConfig())), trendingMoviesUseCase: TrendingMoviesUseCase(trendingMoviesRepository: TrendingMoviesRepository(networkManager: NetworkManager(), trendingMoviesConfig: TrendingMoviesConfig()))))
 }

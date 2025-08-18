@@ -12,7 +12,7 @@ class HomeDIContainer {
     private init() {}
     
     func getHomeViewModel(with pathBinding: Binding<NavigationPath>) -> HomeViewModel {
-        HomeViewModel(coordiantor: getHomeCoordinator(with: pathBinding), genreUseCase: getGenreUseCase(), trendingMoviesUseCase: getTrendingMoviesUseCase())
+        HomeViewModel(coordinator: getHomeCoordinator(with: pathBinding), genreUseCase: getGenreUseCase(), trendingMoviesUseCase: getTrendingMoviesUseCase())
     }
     
     private func getHomeCoordinator(with pathBinding: Binding<NavigationPath>) -> HomeCoordinator {
