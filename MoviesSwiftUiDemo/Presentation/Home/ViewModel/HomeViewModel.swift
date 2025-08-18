@@ -155,7 +155,8 @@ class HomeViewModel: HomeViewModelProtocol {
 // MARK: - HomeViewModel Input
 extension HomeViewModel {
     func didTapMovie(at index: Int) {
-        coordinator.navigateToDetailsScreen(movieId: self.filteredMovies[index].id ?? 0)
+        guard index < self.filteredMovies.count, let id = self.filteredMovies[index].id else { return }
+        coordinator.navigateToDetailsScreen(movieId: id)
     }
     
     func onAppear() {
