@@ -16,6 +16,7 @@
         <attribute name="releaseDate" optional="YES" attributeType="String"/>
         <attribute name="revenue" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="runtime" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="spokenLanguage" optional="YES" attributeType="Transformable"/>
         <attribute name="status" optional="YES" attributeType="String"/>
         <attribute name="tagline" optional="YES" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
@@ -23,7 +24,6 @@
         <attribute name="voteAverage" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="voteCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="genres" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MoviesGenre"/>
-        <relationship name="spokenLanguages" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SpokenLanguagesEntity"/>
     </entity>
     <entity name="Movies" representedClassName="Movies" syncable="YES" codeGenerationType="class">
         <attribute name="adult" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -43,11 +43,6 @@
     </entity>
     <entity name="MoviesGenre" representedClassName="MoviesGenre" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
-        <attribute name="name" optional="YES" attributeType="String"/>
-    </entity>
-    <entity name="SpokenLanguagesEntity" representedClassName="SpokenLanguagesEntity" syncable="YES" codeGenerationType="class">
-        <attribute name="englishName" optional="YES" attributeType="String"/>
-        <attribute name="iso639_1" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
     </entity>
 </model>

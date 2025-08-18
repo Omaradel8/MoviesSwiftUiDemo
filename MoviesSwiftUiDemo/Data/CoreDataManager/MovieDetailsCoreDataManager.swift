@@ -85,6 +85,8 @@ final class MovieDetailsCoreDataManager {
                     movieEntity.addToGenres(genreEntity)
                 }
             }
+            
+            movieEntity.spokenLanguage = model.spokenLanguages?.compactMap({$0.englishName}) as? NSArray
 
             print("✅ Saved \(movieEntity.title ?? "") movie.")
             // Save to Core Data
@@ -106,7 +108,10 @@ final class MovieDetailsCoreDataManager {
                 return nil
             }
 
-            // Build the MovieDetailsModel from the entity
+            let spokenLanguages: [SpokenLanguage] = (entity.spokenLanguage as? [String])?.map { code in
+                SpokenLanguage(englishName: code, iso639_1: nil, name: nil)
+            } ?? []
+            
             return MovieDetailsModel(
                 adult: entity.adult,
                 backdropPath: entity.backdropPath,
@@ -126,7 +131,7 @@ final class MovieDetailsCoreDataManager {
                 releaseDate: entity.releaseDate,
                 revenue: Int(entity.revenue),
                 runtime: Int(entity.runtime),
-                spokenLanguages: [],
+                spokenLanguages: spokenLanguages,
                 status: entity.status,
                 tagline: entity.tagline,
                 title: entity.title,
