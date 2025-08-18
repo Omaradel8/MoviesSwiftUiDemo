@@ -87,46 +87,55 @@ class HomeViewModel: HomeViewModelProtocol {
     
     func getTrendingMovies() {
         if NetworkMonitor.shared.isConnected {
-            Task { [weak self] in
-                guard let self = self else { return }
-                guard !isLoadingPage else { return }
-                guard nextPage <= (totalPages ?? 1) else { return }
-                guard lastRequestedPage != nextPage else { return }
-                
-                self.lastRequestedPage = nextPage
+            fetchOnlinTrendingMovies()
+        }else{
+            fetchOfflineTrendingMovies()
+        }
+    }
+    
+    private func fetchOnlinTrendingMovies() {
+        Task { [weak self] in
+            guard let self = self else { return }
+            guard !isLoadingPage else { return }
+            guard nextPage <= (totalPages ?? 1) else { return }
+            guard lastRequestedPage != nextPage else { return }
+            
+            self.lastRequestedPage = nextPage
+            
+            await MainActor.run {
+                self.isLoadingPage = true
+            }
+            
+            defer {
+                Task { @MainActor in
+                    self.isLoadingPage = false
+                }
+            }
+            
+            do {
+                let response: TrendingMoviesModel = try await trendingMoviesUseCase.getTrendingMovies(with: nextPage)
+                trendingMoviesUseCase.saveMoviesIfNeeded(response.movies ?? [], context: context)
                 
                 await MainActor.run {
-                    self.isLoadingPage = true
+                    self.trendingMovies.append(contentsOf: response.movies ?? [])
+                    self.nextPage += 1
+                    self.totalPages = response.totalPages
+                    self.hasLoadedData = true
                 }
-                
-                defer {
-                    Task { @MainActor in
-                        self.isLoadingPage = false
-                    }
-                }
-                
-                do {
-                    let response: TrendingMoviesModel = try await trendingMoviesUseCase.getTrendingMovies(with: nextPage)
-                    trendingMoviesUseCase.saveMoviesIfNeeded(response.movies ?? [], context: context)
-                    
-                    await MainActor.run {
-                        self.trendingMovies.append(contentsOf: response.movies ?? [])
-                        self.nextPage += 1
-                        self.totalPages = response.totalPages
-                        self.hasLoadedData = true
-                    }
-                }
-                catch let baseError as BaseError {
-                    print(baseError.getErrorMessage())
-               } catch {
-                   print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
-               }
             }
-        }else{
-            let localMovies = trendingMoviesUseCase.fetchLocalMovies(context: context)
-            DispatchQueue.main.async {
-                self.trendingMovies.append(contentsOf: localMovies)
-            }
+            catch let baseError as BaseError {
+                print(baseError.getErrorMessage())
+           } catch {
+               print(BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage())
+           }
+        }
+
+    }
+    
+    private func fetchOfflineTrendingMovies() {
+        let localMovies = trendingMoviesUseCase.fetchLocalMovies(context: context)
+        DispatchQueue.main.async {
+            self.trendingMovies.append(contentsOf: localMovies)
         }
     }
 
