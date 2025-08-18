@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FFDB748F2E534B5E00AA695D /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFDB748E2E534B5E00AA695D /* CoreData.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		FF5B247C2E50AC9100EB794E /* MoviesSwiftUiDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoviesSwiftUiDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FFDB748E2E534B5E00AA695D /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -23,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FFDB748F2E534B5E00AA695D /* CoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -33,6 +39,7 @@
 			isa = PBXGroup;
 			children = (
 				FF5B247E2E50AC9100EB794E /* MoviesSwiftUiDemo */,
+				FFDB748D2E534B5E00AA695D /* Frameworks */,
 				FF5B247D2E50AC9100EB794E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,6 +50,14 @@
 				FF5B247C2E50AC9100EB794E /* MoviesSwiftUiDemo.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		FFDB748D2E534B5E00AA695D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FFDB748E2E534B5E00AA695D /* CoreData.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
