@@ -44,25 +44,33 @@ class MovieDetailsViewModel: ObservableObject, MovieDetailsViewModelProtocol {
     
     func getMovieDetails() async {
         if NetworkMonitor.shared.isConnected {
-            Task {
-                do {
-                    let response: MovieDetailsModel = try await movieDetailsUseCase.getMovieDetails(with: movieId)
-                    movieDetailsUseCase.saveMovieDetailsIfNeeded(response)
-                    await MainActor.run {
-                        self.movieDetails = response
-                    }
-                }
-                catch let baseError as BaseError {
-                    self.apiRequestError = baseError.getErrorMessage()
-               } catch {
-                   self.apiRequestError = BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage()
-               }
-            }
+            await getMovieDetailsOnline()
         }else{
-            let movieDetails = MovieDetailsCoreDataManager.shared.fetchMovieDetails(by: movieId ?? 0)
-            await MainActor.run {
-                self.movieDetails = movieDetails ?? emptyMovie
+            await getMovieDetailsOffline()
+        }
+    }
+    
+    private func getMovieDetailsOnline() async {
+        Task {
+            do {
+                let response: MovieDetailsModel = try await movieDetailsUseCase.getMovieDetails(with: movieId)
+                movieDetailsUseCase.saveMovieDetailsIfNeeded(response)
+                await MainActor.run {
+                    self.movieDetails = response
+                }
             }
+            catch let baseError as BaseError {
+                self.apiRequestError = baseError.getErrorMessage()
+           } catch {
+               self.apiRequestError = BaseError(errorCode: ErrorCode.UNKNOWN_ERROR.rawValue).getErrorMessage()
+           }
+        }
+    }
+    
+    private func getMovieDetailsOffline() async {
+        let movieDetails = MovieDetailsCoreDataManager.shared.fetchMovieDetails(by: movieId ?? 0)
+        await MainActor.run {
+            self.movieDetails = movieDetails ?? emptyMovie
         }
     }
 }
