@@ -22,8 +22,8 @@ struct MovieDetailsView: View {
                 AsyncImage(url: URL(string: viewModel.movieDetails.backdropFullPath ?? "")) { image in
                     image
                         .resizable()
-                        .scaledToFit()
-                        .frame(maxWidth: .infinity)
+                        .scaledToFill()
+                        .frame(maxWidth: UIScreen.main.bounds.width)
                         .frame(height: 350)
                 } placeholder: {
                     ProgressView()
